@@ -9,6 +9,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/tasks', async (req, res, next) => {
   await task_helpers.getTasks().then((response) => {
+    res.header('Access-Control-Allow-Origin', '*');
     res.status(200).send(response);
   }).catch((err) => {
     console.log('priority');
