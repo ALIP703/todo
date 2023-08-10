@@ -36,7 +36,18 @@ module.exports = {
   getAllTasksByPriorityId: (priorityId) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const results = await db.promise().query('SELECT * FROM taskTable WHERE priorityId = ?', [priorityId]);
+        const results = await db.promise().query(`
+        SELECT
+          t.id,
+          t.heading,
+          t.description,
+          t.dateTime,
+          t.image,
+          t.createdAt,
+          p.name as priority
+        FROM taskTable AS t
+        LEFT JOIN priority AS p ON t.priorityId = p.id
+        WHERE t.priorityId = ?;`, [priorityId]);
         resolve(results[0]); // 0 th data is table row data 
       } catch (err) {
         reject(err);
