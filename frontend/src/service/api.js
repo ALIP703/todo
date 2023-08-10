@@ -11,5 +11,8 @@ export const ApiServices = {
     },
     getAllPriority: () => {
         return api.get("/priorities");
+    },
+    getAllTasksByPriorityId: (priorityId) => {
+        return api.get(`/tasks/${priorityId}`);
     }
 }
