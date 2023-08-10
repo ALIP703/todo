@@ -1,84 +1,142 @@
 import React from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button, DropdownButton, Dropdown, Form, FloatingLabel, Card } from 'react-bootstrap'
 import { ApiServices } from '../service/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrash, faEye, faFilter, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import DatePicker from 'react-datepicker';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import './TaskTable.css'
+import { handelDeleteTask, handleFilterClick, handleImageChange, useDateSelected, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
 
 function TaskTable() {
-    const [tableData, setTableDate] = React.useState([{
-        id: 0,
-        heading: '',
-        description: '',
-        dateTime: '',
-        image: '',
-        priority: '',
-        createdAt: '',
-    }]);
-    const [priorities, setPriorities] = React.useState([{
-        id: 0,
-        name: ''
-    }]);
+    const { setFile } = useFile()
+    const { imagePreviewUrl, setImagePreviewUrl } = useImagePreviewUrl()
+    const { userData, setUserData } = useUserDataOnDialog()
+    const { priorities, setPriorities } = usePriorityData()
+    const { tableData, setTableData } = useTableData()
+    const { selectedDate, setSelectedDate } = useDateSelected()
+    const { modelShow, setModelShow } = useModelOpen()
+    const { modelHead, setModelHead } = useModelHeading()
 
-    const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-    const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-    const handleFilterClick = (priorityId = null) => {
-        console.log(priorityId);
-        if (priorityId !== null) {
-            ApiServices.getAllTasks().then((res) => {
-                setTableDate(res.data.tasks)
-            })
-        } else {
-            ApiServices.getAllTasks().then((res) => {
-                setTableDate(res.data.tasks)
-            })
-        }
-    }
-    const handelDeleteTask = (id) => {
-        ApiServices.deleteTask(id).then((res) => {
-            console.log(res.data.data);
-            if (res.data.data === true) {
-                ApiServices.getAllTasks().then((res) => {
-                    setTableDate(res.data.tasks)
-                })
-            }
-        })
-    }
+    const handleClose = () => setModelShow(false);
+    const handleShow = () => setModelShow(true);
 
     React.useEffect(() => {
         ApiServices.getAllTasks().then((res) => {
-            setTableDate(res.data.tasks)
-            console.log(tableData);
+            setTableData(res.data.tasks)
             ApiServices.getAllPriority().then((res) => {
                 setPriorities(res.data.priorities)
             })
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setTableDate]);
+    }, [setTableData]);
 
     return (
         <div className="card">
             <div className="card-body">
                 <div className="row align-items-center mb-3">
                     <h2 className="col" >Task List</h2>
+
+                    {/* dropdown */}
                     <div className="dropdown filter">
-                        <button className="btn btn-secondary btn-sm col-auto margin-right-3"
-                            onClick={toggleDropdown}>
-                            <FontAwesomeIcon icon={faFilter} className="icon-hover" />
-                        </button>
-                        <ul className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`} >
-                            <li><button className="dropdown-item" onClick={() => { handleFilterClick() }}>All</button></li>
+                        {/* dropdown menu Button */}
+                        <DropdownButton
+                            // as={ButtonGroup}
+                            key={'start'}
+                            id={`dropdown-button-drop-start`}
+                            drop={'start'}
+                            variant="secondary"
+                            size='sm'
+                            title={<FontAwesomeIcon icon={faFilter} size='' className="icon-hover" />}
+                        >
+                            {/* dropdown menu item */}
+                            <Dropdown.Item eventKey="1" onClick={() => { handleFilterClick(null,setTableData) }}>All</Dropdown.Item>
                             {priorities.map((priority) => (
-                                <li><button className="dropdown-item" onClick={() => { handleFilterClick(priority.id) }}>{priority.name}</button></li>
+                                <Dropdown.Item eventKey={priority.is}
+                                    onClick={() => { handleFilterClick(priority.id, setTableData) }}>{priority.name}</Dropdown.Item>
                             ))}
-                        </ul>
+                        </DropdownButton>
                     </div>
-                    <button className="btn btn-secondary btn-sm col-auto margin-right-2" >
-                        <span style={{ marginRight: '8px' }}>Add Task</span>
-                        <FontAwesomeIcon icon={faPlusCircle} className="icon-hover ml-2" />
-                    </button>
+
+                    {/* model */}
+                    <div className="model model-section">
+                        <Button variant="primary" size='sm'
+                            onClick={() => {
+                                handleShow()
+                                setModelHead('Add Task')
+                            }}>
+                            <span style={{ marginRight: '8px' }}>Add Task</span>
+                            <FontAwesomeIcon icon={faPlusCircle} className="icon-hover" />
+                        </Button>
+
+
+                        <Modal show={modelShow} onHide={handleClose}>
+                            <form onSubmit={(event) => {
+                                console.log(modelHead);
+                                if (modelHead === 'Add Task') {
+                                    console.log(modelHead);
+                                }
+                            }}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>{modelHead}</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <FloatingLabel htmlFor="heading">Heading</FloatingLabel>
+                                    <Form.Control
+                                        type="text"
+                                        id="heading"
+                                    />
+                                    <FloatingLabel htmlFor="description">Description</FloatingLabel>
+                                    <Form.Control
+                                        as="textarea"
+                                        id='description'
+                                        rows={3}
+                                    />
+                                    <Form.Select aria-label="Default select example" style={{ marginTop: '1rem' }}>
+                                        <option>Priority</option>
+                                        {priorities.map((priority) => (
+                                            <option value={priority.id}>{priority.name}</option>
+                                        ))}
+                                    </Form.Select>
+                                    <FloatingLabel htmlFor="dateTime">DateTime</FloatingLabel>
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={date => setSelectedDate(date)}
+                                        showTimeSelect
+                                        // showTimeSelectOnly
+                                        timeIntervals={1}
+                                        timeCaption="Time"
+                                        minDate={new Date()}
+                                        dateFormat="Pp"
+                                        isClearable
+                                    />
+                                    <label for="image" class="custom-file-upload">
+                                        <input
+                                            type="file"
+                                            id="image"
+                                            accept="image/png, image/jpeg"
+                                            onChange={(e) => { handleImageChange(e, setFile, setImagePreviewUrl) }}
+                                            className="filetype"
+                                        />
+                                        Choose Image
+                                    </label>
+                                    {imagePreviewUrl && (
+                                        <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem' }}>
+                                            <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
+                                        </Card>
+                                    )}
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    <Button type='submit'>Submit</Button>
+                                </Modal.Footer>
+                            </form>
+                        </Modal>
+                    </div>
                 </div>
                 <div className="table-responsive">
                     <table className="table align-middle table-bordered">
@@ -109,13 +167,7 @@ function TaskTable() {
                                     <td className='th-action justify-content-end text-center'>
                                         <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' />
                                         <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2' />
-                                        <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={()=>{handelDeleteTask(data.id)}}/>
-                                        {/* <button className="btn btn-primary btn-sm me-2 float-end">
-                                            Edit
-                                        </button>
-                                        <button className="btn btn-danger btn-sm me-2 float-end">
-                                            Delete
-                                        </button> */}
+                                        <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={() => { handelDeleteTask(data.id, setTableData) }} />
                                     </td>
                                 </tr>
                             ))}
