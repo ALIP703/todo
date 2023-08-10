@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskTable.css'
-import { handelDeleteTask, handleFilterClick, handleImageChange, useDateSelected, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
+import { handelDeleteTask, handleFilterClick, handleImageChange, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
 
 function TaskTable() {
     const { setFile } = useFile()
@@ -15,10 +15,8 @@ function TaskTable() {
     const { userData, setUserData } = useUserDataOnDialog()
     const { priorities, setPriorities } = usePriorityData()
     const { tableData, setTableData } = useTableData()
-    const { selectedDate, setSelectedDate } = useDateSelected()
     const { modelShow, setModelShow } = useModelOpen()
     const { modelHead, setModelHead } = useModelHeading()
-
 
     const handleClose = () => setModelShow(false);
     const handleShow = () => setModelShow(true);
@@ -52,7 +50,7 @@ function TaskTable() {
                             title={<FontAwesomeIcon icon={faFilter} size='' className="icon-hover" />}
                         >
                             {/* dropdown menu item */}
-                            <Dropdown.Item eventKey="1" onClick={() => { handleFilterClick(null,setTableData) }}>All</Dropdown.Item>
+                            <Dropdown.Item eventKey="1" onClick={() => { handleFilterClick(null, setTableData) }}>All</Dropdown.Item>
                             {priorities.map((priority) => (
                                 <Dropdown.Item eventKey={priority.is}
                                     onClick={() => { handleFilterClick(priority.id, setTableData) }}>{priority.name}</Dropdown.Item>
@@ -87,14 +85,22 @@ function TaskTable() {
                                     <Form.Control
                                         type="text"
                                         id="heading"
+                                        name='heading'
+                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     />
                                     <FloatingLabel htmlFor="description">Description</FloatingLabel>
                                     <Form.Control
                                         as="textarea"
                                         id='description'
                                         rows={3}
+                                        name='description'
+                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     />
-                                    <Form.Select aria-label="Default select example" style={{ marginTop: '1rem' }}>
+                                    <Form.Select aria-label="Default select example"
+                                        style={{ marginTop: '1rem' }}
+                                        name='priorityId'
+                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
+                                    >
                                         <option>Priority</option>
                                         {priorities.map((priority) => (
                                             <option value={priority.id}>{priority.name}</option>
@@ -102,10 +108,9 @@ function TaskTable() {
                                     </Form.Select>
                                     <FloatingLabel htmlFor="dateTime">DateTime</FloatingLabel>
                                     <DatePicker
-                                        selected={selectedDate}
-                                        onChange={date => setSelectedDate(date)}
+                                        selected={userData.dateTime}
+                                        onChange={date => { handleUserDateChange(date, userData, setUserData) }}
                                         showTimeSelect
-                                        // showTimeSelectOnly
                                         timeIntervals={1}
                                         timeCaption="Time"
                                         minDate={new Date()}

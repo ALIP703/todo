@@ -31,10 +31,6 @@ export const usePriorityData = () => {
     return { priorities, setPriorities }
 }
 
-export const useDateSelected = () => {
-    const [selectedDate, setSelectedDate] = React.useState(null);
-    return { selectedDate, setSelectedDate }
-}
 
 export const useModelOpen = () => {
     const [modelShow, setModelShow] = React.useState(false);
@@ -60,11 +56,10 @@ export const handleFilterClick = (priorityId = null, setTableData) => {
 
 export const useUserDataOnDialog = () => {
     const [userData, setUserData] = React.useState({
-        id: 0,
         heading: '',
         description: '',
         dateTime: '',
-        priority: '',
+        priorityId: '',
     });
     return { userData, setUserData }
 }
@@ -88,3 +83,24 @@ export const handelDeleteTask = (id, setTableDate) => {
     })
 }
 
+export const handleUserDataChange = (event, userData, setUserData) => {
+    console.log(userData);
+    if (userData) {
+        setUserData({
+            ...userData,
+            [event.target.name]:
+                event.target.type === 'number'
+                    ? parseInt(event.target.value)
+                    : event.target.value,
+        });
+    }
+};
+
+export const handleUserDateChange = (date, userData, setUserData) => {
+    if (userData) {
+        setUserData({
+            ...userData,
+            dateTime:date
+        });
+    }
+};
