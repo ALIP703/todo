@@ -32,5 +32,15 @@ module.exports = {
         reject(err);
       }
     })
+  },
+  getAllTasksByPriorityId: (priorityId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const results = await db.promise().query('SELECT * FROM taskTable WHERE priorityId = ?', [priorityId]);
+        resolve(results[0]); // 0 th data is table row data 
+      } catch (err) {
+        reject(err);
+      }
+    })
   }
 }
