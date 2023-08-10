@@ -71,6 +71,19 @@ export const useUserDataOnDialog = () => {
     return { userData, setUserData }
 }
 
+export const useDataOnModelProp = () => {
+    const [modelPropData, setModelPropData] = React.useState({
+        id:0,
+        heading: '',
+        description: '',
+        dateTime: '',
+        priority: '',
+        image:'',
+        createdAt:''
+    });
+    return { modelPropData, setModelPropData }
+}
+
 export const useRowId = () => { // custom offline hook
     const [rowId, setRowId] = React.useState(null);
     return { rowId, setRowId }

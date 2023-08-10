@@ -7,12 +7,14 @@ import DatePicker from 'react-datepicker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskTable.css'
-import { handelDeleteTask, handleAddTasks, handleFilterClick, handleImageChange, handleRowEdit, handleUpdateTask, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, useOldImagePreviewUrl, usePriorityData, useRowId, useTableData, useUserDataOnDialog } from './TaskTableHelper';
+import { handelDeleteTask, handleAddTasks, handleFilterClick, handleImageChange, handleRowEdit, handleUpdateTask, handleUserDataChange, handleUserDateChange, useDataOnModelProp, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, useOldImagePreviewUrl, usePriorityData, useRowId, useTableData, useUserDataOnDialog } from './TaskTableHelper';
+import ViewTaskModel from './ViewTaskModel';
 
 function TaskTable() {
     const { file, setFile } = useFile()
     const { imagePreviewUrl, setImagePreviewUrl } = useImagePreviewUrl()
     const { userData, setUserData } = useUserDataOnDialog()
+    const { modelPropData, setModelPropData } = useDataOnModelProp()
     const { priorities, setPriorities } = usePriorityData()
     const { tableData, setTableData } = useTableData()
     const { modelShow, setModelShow } = useModelOpen()
@@ -22,6 +24,15 @@ function TaskTable() {
 
     const handleClose = () => setModelShow(false);
     const handleShow = () => setModelShow(true);
+    const [showModal, setShowModal] = React.useState(false);
+
+    const showViewTaskModal = () => {
+        setShowModal(true);
+    };
+
+    const hideViewTaskModal = () => {
+        setShowModal(false);
+    };
 
     React.useEffect(() => {
         ApiServices.getAllTasks().then((res) => {
@@ -135,7 +146,7 @@ function TaskTable() {
                                     </label>
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                                         {imagePreviewUrl && (
-                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem',marginRight:'3rem' }}>
+                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem', marginRight: '3rem' }}>
                                                 <p>Image</p>
                                                 <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
                                             </Card>
@@ -185,12 +196,16 @@ function TaskTable() {
                                         </div>
                                     </td>
                                     <td className='th-action justify-content-end text-center'>
-                                        <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' />
+                                        <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' onClick={() => {
+                                            setModelPropData(data)
+                                            showViewTaskModal()
+                                        }} />
                                         <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2' onClick={() => { handleRowEdit(data, setModelShow, setUserData, setOldImagePreviewUrl, setModelHead, setRowId) }} />
                                         <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={() => { handelDeleteTask(data.id, setTableData) }} />
                                     </td>
                                 </tr>
                             ))}
+                            <ViewTaskModel show={showModal} onHide={hideViewTaskModal} data={modelPropData} />
                         </tbody>
                     </table>
                 </div>
