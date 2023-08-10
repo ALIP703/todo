@@ -53,5 +53,23 @@ module.exports = {
         reject(err);
       }
     })
+  },
+  deleteTask:(id)=>{
+    return new Promise(async (resolve, reject) => {
+      try {
+        const deleteResult = await db.promise().query(`
+          DELETE FROM taskTable WHERE id = ?;
+        `, [id]);
+        
+        // Check if any rows were deleted
+        if (deleteResult[0].affectedRows === 0) {
+          return resolve(false); // No task was deleted
+        }
+        
+        resolve(true); // Task deleted successfully
+      } catch (err) {
+        reject(err);
+      }
+    })
   }
 }
