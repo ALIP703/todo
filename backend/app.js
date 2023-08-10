@@ -5,9 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const db=require('./config/connection/connection')
 var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 const cors=  require('cors');
-
+require('dotenv').config();
 var app = express();
 
 var corsOptions = {
@@ -21,7 +20,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public/images', express.static(path.join(__dirname, 'public/images')));
 
 app.use('/', indexRouter);
 // app.use('/users', usersRouter);
@@ -41,27 +41,7 @@ db.connect(function(err) {
     console.log('Connection error: ' + err);
   } else {
     console.log('Connected to the database!');
-    console.log('Server Start On http://localhost:3000/');
-
-
-    // Perform database operations here
-    // For example:
-    // db.query('SELECT * FROM users', function(err, results) {
-    //   if (err) {
-    //     console.log('Error executing query: ' + err);
-    //   } else {
-    //     console.log('Query results: ', results);
-    //   }
-    // });
-
-    // Don't forget to close the connection when done
-    // db.end(function(err) {
-    //   if (err) {
-    //     console.log('Error closing the connection: ' + err);
-    //   } else {
-    //     console.log('Connection closed successfully.');
-    //   }
-    // });
+    console.log(`Server is running on port ${process.env.PORT}`);
   }
 });
 // error handler
