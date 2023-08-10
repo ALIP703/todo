@@ -7,16 +7,17 @@ import DatePicker from 'react-datepicker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskTable.css'
-import { handelDeleteTask, handleFilterClick, handleImageChange, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
+import { handelDeleteTask, handleAddTasks, handleFilterClick, handleImageChange, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, useOldImagePreviewUrl, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
 
 function TaskTable() {
-    const { setFile } = useFile()
+    const { file,setFile } = useFile()
     const { imagePreviewUrl, setImagePreviewUrl } = useImagePreviewUrl()
     const { userData, setUserData } = useUserDataOnDialog()
     const { priorities, setPriorities } = usePriorityData()
     const { tableData, setTableData } = useTableData()
     const { modelShow, setModelShow } = useModelOpen()
     const { modelHead, setModelHead } = useModelHeading()
+    const { setOldImagePreviewUrl } = useOldImagePreviewUrl()
 
     const handleClose = () => setModelShow(false);
     const handleShow = () => setModelShow(true);
@@ -47,7 +48,7 @@ function TaskTable() {
                             drop={'start'}
                             variant="secondary"
                             size='sm'
-                            title={<FontAwesomeIcon icon={faFilter} size='' className="icon-hover" />}
+                            title={<FontAwesomeIcon icon={faFilter} className="icon-hover" />}
                         >
                             {/* dropdown menu item */}
                             <Dropdown.Item eventKey="1" onClick={() => { handleFilterClick(null, setTableData) }}>All</Dropdown.Item>
@@ -75,6 +76,7 @@ function TaskTable() {
                                 console.log(modelHead);
                                 if (modelHead === 'Add Task') {
                                     console.log(modelHead);
+                                    handleAddTasks(event, file, userData, setModelShow, setTableData, setOldImagePreviewUrl, setImagePreviewUrl, setUserData)
                                 }
                             }}>
                                 <Modal.Header closeButton>
@@ -101,7 +103,7 @@ function TaskTable() {
                                         name='priorityId'
                                         onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     >
-                                        <option>Priority</option>
+                                        <option value={0}>Priority</option>
                                         {priorities.map((priority) => (
                                             <option value={priority.id}>{priority.name}</option>
                                         ))}
@@ -117,7 +119,7 @@ function TaskTable() {
                                         dateFormat="Pp"
                                         isClearable
                                     />
-                                    <label for="image" class="custom-file-upload">
+                                    <label for="image" className="custom-file-upload">
                                         <input
                                             type="file"
                                             id="image"
@@ -166,12 +168,12 @@ function TaskTable() {
                                     <td className="d-none d-md-table-cell text-center">{data.dateTime}</td>
                                     <td className='th-image d-none d-lg-table-cell text-center'>
                                         <div className="d-flex justify-content-center align-items-center">
-                                            <img crossOrigin="anonymous" src={data.image} alt='doctor' className='table-image' />
+                                            <img crossOrigin="anonymous" src={data.image} alt='Task_image' className='table-image' />
                                         </div>
                                     </td>
                                     <td className='th-action justify-content-end text-center'>
                                         <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' />
-                                        <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2' />
+                                        <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2'/>
                                         <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={() => { handelDeleteTask(data.id, setTableData) }} />
                                     </td>
                                 </tr>

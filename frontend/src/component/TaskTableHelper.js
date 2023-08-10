@@ -104,6 +104,7 @@ export const handleUserDataChange = (event, userData, setUserData) => {
 };
 
 export const handleUserDateChange = (date, userData, setUserData) => {
+    
     if (userData) {
         setUserData({
             ...userData,
@@ -116,33 +117,32 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
     event.preventDefault();
     if (!file || !userData) return;
     let insertedId = '';
-    console.log(userData);
-
     try {
         console.log(userData);
-        await ApiServices.addDoctor(userData).then(async (response) => {
-            console.log('test');
-
-            insertedId = response.data.data.id;
+        await ApiServices.createTask(userData).then(async (response) => {
+            insertedId = response.data.insertedId;
             const formData = new FormData();
-            let filename = 'doctor' + insertedId + '.jpeg';
+            let filename = 'task_' + insertedId + '.jpeg';
             formData.append('image', file, filename);
-            await ApiServices.addDoctorImage(formData).then((response) => {
+            await ApiServices.addTaskImage(formData).then((response) => {
                 setModelShow(false);
+                ApiServices.getAllTasks().then(async (res) => {
+                    setTableData(res.data.tasks);
+                    console.log('tets');
+                    console.log(res);
+                    console.log('tets');
+                    setOldImagePreviewUrl('');
+                    setImagePreviewUrl('');
+                    setUserData({
+                        heading: '',
+                        description: '',
+                        dateTime: '',
+                        priorityId: '',
+                    });
+                    setModelShow(false);
+                });
             }).catch(() => {
                 console.log('image upload error');
-            });
-            ApiServices.getAllTasks().then(async (res) => {
-                setModelShow(false);
-                setTableData(res.data.data);
-                setOldImagePreviewUrl('');
-                setImagePreviewUrl('');
-                setUserData({
-                    heading: '',
-                    description: '',
-                    dateTime: '',
-                    priorityId: '',
-                });
             });
         }).catch(() => {
             console.log('user data upload error');
@@ -152,3 +152,22 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
     }
 };
 
+export const handleRowEdit = async (data, setOpenDialog, setUserData, setOldImagePreviewUrl, setDialogHeader, setRowId) => {
+    setRowId(data.id)
+    setDialogHeader('Update Doctor')
+    setUserData({
+      doctorId: data.doctorId,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      departmentId: data.departmentId,
+      designation: data.designation,
+      instagram: data.instagram,
+      twitter: data.twitter,
+      facebook: data.facebook,
+      linkedin: data.linkedin,
+    })
+    setOpenDialog(true);
+    setOldImagePreviewUrl(data.image)
+  }
+  

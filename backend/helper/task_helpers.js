@@ -1,5 +1,5 @@
 var db = require('../config/connection/connection')
-
+var moment = require('moment')
 module.exports = {
   // fetching all table data from taskTable
   getAllTasks: () => {
@@ -22,6 +22,42 @@ module.exports = {
         reject(err);
       }
     })
+  },
+  createTask: (userData) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        userData.dateTime = moment(userData.dateTime).format();
+        const columns = Object.keys(userData).join(', ');
+        const values = Object.values(userData);
+        const placeholders = values.map(() => '?').join(', ');
+
+        const insertQuery = `INSERT INTO taskTable (${columns}) VALUES (${placeholders})`;
+
+        const result = await db.promise().query(insertQuery, values);
+        const insertedId = result[0]?.insertId;
+
+        // const [dataRows] = await db.promise().query('SELECT * FROM taskTable');
+        resolve({ insertedId });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+  updateTaskImage: (id, image_url) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const updateQuery = `UPDATE taskTable SET image = ? WHERE id = ?`;
+        const result = await db.promise().query(updateQuery, [image_url, id]);
+
+        if (result[0]?.affectedRows > 0) {
+          resolve(true);
+        } else {
+          reject(false);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
   },
   getAllPriority: () => {
     return new Promise(async (resolve, reject) => {
@@ -54,18 +90,18 @@ module.exports = {
       }
     })
   },
-  deleteTask:(id)=>{
+  deleteTask: (id) => {
     return new Promise(async (resolve, reject) => {
       try {
         const deleteResult = await db.promise().query(`
           DELETE FROM taskTable WHERE id = ?;
         `, [id]);
-        
+
         // Check if any rows were deleted
         if (deleteResult[0].affectedRows === 0) {
           return resolve(false); // No task was deleted
         }
-        
+
         resolve(true); // Task deleted successfully
       } catch (err) {
         reject(err);
