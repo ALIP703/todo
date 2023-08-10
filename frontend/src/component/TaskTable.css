@@ -1,3 +1,42 @@
 .description{
     max-width: 150px;
 }
+.table-image{
+    width: 10rem;
+    height: 5rem;
+    /* box-shadow: '0 10px 6px -6px #777';
+    border-radius: '.5rem'; */
+    transition: box-shadow .3s;
+    /* width: 300px; */
+    /* height: 500px; */
+    /* margin: 50px; */
+    border-radius:10px;
+    border: 1px solid #ccc;
+    /* background: #fff; */
+    float: left;
+}
+.table-image:hover{
+    box-shadow: 0 0 18px rgba(33,33,33,.2); 
+    border-radius:5px;
+    width: 10.2rem;
+}
+.th-image{
+    max-width: 100px;
+}
+.th-action{
+    max-width: 100px;
+}
+.icon-hover:hover {
+    transform: scale(1.2); /* Example: Enlarge the icon on hover */
+    transition: transform 0.3s ease-in-out; /* Example: Add a smooth transition */
+}
+.margin-right-3{
+    margin-right: 3rem;
+}
+.margin-right-2{
+    margin-right: 2rem;
+}
+.filter{
+    width: 50px;
+    margin-right: 1rem;
+}
