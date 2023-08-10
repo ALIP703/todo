@@ -97,7 +97,6 @@ router.put('/task/:id', async (req, res, next) => {
       res.status(200).json({ data: response, message: 'task successfully updated' });
     } else {
       res.status(200).json({ data: response, message: 'task could not update' });
-
     }
   }).catch((err) => {
     res.status(500).send('Error creating Tasks: ' + err);

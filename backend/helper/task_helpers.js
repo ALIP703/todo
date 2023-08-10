@@ -63,6 +63,9 @@ module.exports = {
   updateTask: (id, data) => {
     return new Promise(async (resolve, reject) => {
       try {
+        if (data.dateTime) {
+          data.dateTime = moment(data?.dateTime).format();
+        }
         const keys = Object.keys(data);
         const values = Object.values(data);
         
@@ -82,6 +85,7 @@ module.exports = {
           reject(false);
         }
       } catch (err) {
+        console.log(err);
         reject(err);
       }
     });
