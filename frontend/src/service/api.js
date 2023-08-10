@@ -14,5 +14,8 @@ export const ApiServices = {
     },
     getAllTasksByPriorityId: (priorityId) => {
         return api.get(`/tasks/${priorityId}`);
+    },
+    deleteTask: (id) => {
+        return api.delete(`/task/${id}`);
     }
 }
