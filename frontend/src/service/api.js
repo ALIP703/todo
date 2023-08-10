@@ -2,11 +2,14 @@ import axios from 'axios';
 
 // Create an instance of Axios
 const api = axios.create({
-    baseURL: 'http://localhost:3000', // Replace with your API base URL
+    baseURL: process.env.REACT_APP_API_ENDPOINT,
 });
 
 export const ApiServices = {
     getAllTasks: () => {
         return api.get("/tasks");
+    },
+    getAllPriority: () => {
+        return api.get("/priorities");
     }
 }
