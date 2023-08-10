@@ -36,6 +36,16 @@ function TaskTable() {
             })
         }
     }
+    const handelDeleteTask = (id) => {
+        ApiServices.deleteTask(id).then((res) => {
+            console.log(res.data.data);
+            if (res.data.data === true) {
+                ApiServices.getAllTasks().then((res) => {
+                    setTableDate(res.data.tasks)
+                })
+            }
+        })
+    }
 
     React.useEffect(() => {
         ApiServices.getAllTasks().then((res) => {
@@ -99,7 +109,7 @@ function TaskTable() {
                                     <td className='th-action justify-content-end text-center'>
                                         <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' />
                                         <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2' />
-                                        <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' />
+                                        <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={()=>{handelDeleteTask(data.id)}}/>
                                         {/* <button className="btn btn-primary btn-sm me-2 float-end">
                                             Edit
                                         </button>
