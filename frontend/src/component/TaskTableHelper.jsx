@@ -73,13 +73,13 @@ export const useUserDataOnDialog = () => {
 
 export const useDataOnModelProp = () => {
     const [modelPropData, setModelPropData] = React.useState({
-        id:0,
+        id: 0,
         heading: '',
         description: '',
         dateTime: '',
         priority: '',
-        image:'',
-        createdAt:''
+        image: '',
+        createdAt: ''
     });
     return { modelPropData, setModelPropData }
 }
@@ -99,17 +99,20 @@ export const handleImageChange = (e, setFile, setImagePreviewUrl) => {
 };
 
 export const handelDeleteTask = (id, setTableDate) => {
-    ApiServices.deleteTask(id).then((res) => {
-        if (res.data.data === true) {
-            ApiServices.getAllTasks().then((res) => {
-                setTableDate(res.data.tasks)
-            })
-        }
-    })
+    if (window.confirm("Are you sure you want to delete this task?")) {
+        ApiServices.deleteTask(id).then((res) => {
+            if (res.data.data === true) {
+                ApiServices.getAllTasks().then((res) => {
+                    setTableDate(res.data.tasks)
+                })
+            }
+        })
+    }
 }
 
+
+
 export const handleUserDataChange = (event, userData, setUserData) => {
-    console.log(userData);
     if (userData) {
         setUserData({
             ...userData,
@@ -122,7 +125,6 @@ export const handleUserDataChange = (event, userData, setUserData) => {
 };
 
 export const handleUserDateChange = (date, userData, setUserData) => {
-    console.log(date);
     if (userData) {
         setUserData({
             ...userData,
@@ -136,7 +138,6 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
     if (!file || !userData) return;
     let insertedId = '';
     try {
-        console.log(userData);
         await ApiServices.createTask(userData).then(async (response) => {
             insertedId = response.data.insertedId;
             const formData = new FormData();
@@ -146,9 +147,6 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
                 setModelShow(false);
                 ApiServices.getAllTasks().then(async (res) => {
                     setTableData(res.data.tasks);
-                    console.log('tets');
-                    console.log(res);
-                    console.log('tets');
                     setImagePreviewUrl('');
                     setUserData({
                         heading: '',

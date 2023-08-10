@@ -134,7 +134,7 @@ function TaskTable() {
                                         dateFormat="Pp"
                                         isClearable
                                     />
-                                    <label for="image" className="custom-file-upload">
+                                    <label  className="custom-file-upload">
                                         <input
                                             type="file"
                                             id="image"
