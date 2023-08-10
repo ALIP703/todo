@@ -31,6 +31,13 @@ export const usePriorityData = () => {
     return { priorities, setPriorities }
 }
 
+export const useOldImagePreviewUrl = () => {
+    const [oldImagePreviewUrl, setOldImagePreviewUrl] = React.useState('');
+
+    return { oldImagePreviewUrl, setOldImagePreviewUrl };
+};
+
+
 
 export const useModelOpen = () => {
     const [modelShow, setModelShow] = React.useState(false);
@@ -100,7 +107,48 @@ export const handleUserDateChange = (date, userData, setUserData) => {
     if (userData) {
         setUserData({
             ...userData,
-            dateTime:date
+            dateTime: date
         });
     }
 };
+
+export const handleAddTasks = async (event, file, userData, setModelShow, setTableData, setOldImagePreviewUrl, setImagePreviewUrl, setUserData) => {
+    event.preventDefault();
+    if (!file || !userData) return;
+    let insertedId = '';
+    console.log(userData);
+
+    try {
+        console.log(userData);
+        await ApiServices.addDoctor(userData).then(async (response) => {
+            console.log('test');
+
+            insertedId = response.data.data.id;
+            const formData = new FormData();
+            let filename = 'doctor' + insertedId + '.jpeg';
+            formData.append('image', file, filename);
+            await ApiServices.addDoctorImage(formData).then((response) => {
+                setModelShow(false);
+            }).catch(() => {
+                console.log('image upload error');
+            });
+            ApiServices.getAllTasks().then(async (res) => {
+                setModelShow(false);
+                setTableData(res.data.data);
+                setOldImagePreviewUrl('');
+                setImagePreviewUrl('');
+                setUserData({
+                    heading: '',
+                    description: '',
+                    dateTime: '',
+                    priorityId: '',
+                });
+            });
+        }).catch(() => {
+            console.log('user data upload error');
+        });
+    } catch (error) {
+        console.error(error);
+    }
+};
+
