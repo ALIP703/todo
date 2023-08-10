@@ -27,5 +27,8 @@ export const ApiServices = {
                 'Content-Type': 'multipart/form-data',
             },
         });
-    }
+    },
+    updateTask: (id,userData) => {
+        return api.put(`/task/${id}`,userData);
+    },
 }

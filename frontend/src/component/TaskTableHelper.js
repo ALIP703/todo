@@ -71,6 +71,11 @@ export const useUserDataOnDialog = () => {
     return { userData, setUserData }
 }
 
+export const useRowId = () => { // custom offline hook
+    const [rowId, setRowId] = React.useState(null);
+    return { rowId, setRowId }
+}
+
 export const handleImageChange = (e, setFile, setImagePreviewUrl) => {
     setFile(e.target.files?.[0] || null);
     // const image = e.target.files[0];
@@ -104,7 +109,7 @@ export const handleUserDataChange = (event, userData, setUserData) => {
 };
 
 export const handleUserDateChange = (date, userData, setUserData) => {
-    
+    console.log(date);
     if (userData) {
         setUserData({
             ...userData,
@@ -113,7 +118,7 @@ export const handleUserDateChange = (date, userData, setUserData) => {
     }
 };
 
-export const handleAddTasks = async (event, file, userData, setModelShow, setTableData, setOldImagePreviewUrl, setImagePreviewUrl, setUserData) => {
+export const handleAddTasks = async (event, file, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData) => {
     event.preventDefault();
     if (!file || !userData) return;
     let insertedId = '';
@@ -131,7 +136,6 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
                     console.log('tets');
                     console.log(res);
                     console.log('tets');
-                    setOldImagePreviewUrl('');
                     setImagePreviewUrl('');
                     setUserData({
                         heading: '',
@@ -152,22 +156,57 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
     }
 };
 
-export const handleRowEdit = async (data, setOpenDialog, setUserData, setOldImagePreviewUrl, setDialogHeader, setRowId) => {
+export const handleUpdateTask = async (event, image, id, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData) => {
+    event.preventDefault();
+    try {
+        if (id == null) {
+            return;
+        }
+        await ApiServices.updateTask(id, userData).then(async (response) => {
+            if (image) {
+                const formData = new FormData();
+                let filename = 'doctor' + id + '.jpeg';
+                formData.append('image', image, filename);
+                await ApiServices.addTaskImage(formData).then((response) => {
+                    console.log('image upload success');
+                }).catch(() => {
+                    console.error('image upload error');
+                });
+            }
+            ApiServices.getAllTasks().then(async (res) => {
+                setTableData(res.data.tasks);
+                setImagePreviewUrl('');
+                setUserData({
+                    heading: '',
+                    description: '',
+                    dateTime: '',
+                    priorityId: '',
+                });
+                setModelShow(false);
+            });
+        }).catch(() => {
+            console.log('user data upload error');
+        });
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+export const handleRowEdit = async (data, setModelShow, setUserData, setOldImagePreviewUrl, setModelHead, setRowId) => {
     setRowId(data.id)
-    setDialogHeader('Update Doctor')
+    setModelHead('Update Task')
+
+    const formattedDate = new Date(data.dateTime)
+
     setUserData({
-      doctorId: data.doctorId,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      departmentId: data.departmentId,
-      designation: data.designation,
-      instagram: data.instagram,
-      twitter: data.twitter,
-      facebook: data.facebook,
-      linkedin: data.linkedin,
+        heading: data.heading,
+        description: data.description,
+        dateTime: formattedDate,
+        priorityId: data.priorityId,
+        image: data.image
     })
-    setOpenDialog(true);
+    setModelShow(true);
     setOldImagePreviewUrl(data.image)
-  }
-  
+}
+

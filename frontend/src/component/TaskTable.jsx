@@ -7,10 +7,10 @@ import DatePicker from 'react-datepicker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskTable.css'
-import { handelDeleteTask, handleAddTasks, handleFilterClick, handleImageChange, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, useOldImagePreviewUrl, usePriorityData, useTableData, useUserDataOnDialog } from './TaskTableHelper';
+import { handelDeleteTask, handleAddTasks, handleFilterClick, handleImageChange, handleRowEdit, handleUpdateTask, handleUserDataChange, handleUserDateChange, useFile, useImagePreviewUrl, useModelHeading, useModelOpen, useOldImagePreviewUrl, usePriorityData, useRowId, useTableData, useUserDataOnDialog } from './TaskTableHelper';
 
 function TaskTable() {
-    const { file,setFile } = useFile()
+    const { file, setFile } = useFile()
     const { imagePreviewUrl, setImagePreviewUrl } = useImagePreviewUrl()
     const { userData, setUserData } = useUserDataOnDialog()
     const { priorities, setPriorities } = usePriorityData()
@@ -18,6 +18,7 @@ function TaskTable() {
     const { modelShow, setModelShow } = useModelOpen()
     const { modelHead, setModelHead } = useModelHeading()
     const { setOldImagePreviewUrl } = useOldImagePreviewUrl()
+    const { rowId, setRowId } = useRowId()
 
     const handleClose = () => setModelShow(false);
     const handleShow = () => setModelShow(true);
@@ -73,10 +74,10 @@ function TaskTable() {
 
                         <Modal show={modelShow} onHide={handleClose}>
                             <form onSubmit={(event) => {
-                                console.log(modelHead);
                                 if (modelHead === 'Add Task') {
-                                    console.log(modelHead);
                                     handleAddTasks(event, file, userData, setModelShow, setTableData, setOldImagePreviewUrl, setImagePreviewUrl, setUserData)
+                                } else if (modelHead === 'Update Task') {
+                                    handleUpdateTask(event, file, rowId, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData)
                                 }
                             }}>
                                 <Modal.Header closeButton>
@@ -88,6 +89,7 @@ function TaskTable() {
                                         type="text"
                                         id="heading"
                                         name='heading'
+                                        value={userData.heading}
                                         onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     />
                                     <FloatingLabel htmlFor="description">Description</FloatingLabel>
@@ -96,11 +98,13 @@ function TaskTable() {
                                         id='description'
                                         rows={3}
                                         name='description'
+                                        value={userData.description}
                                         onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     />
                                     <Form.Select aria-label="Default select example"
                                         style={{ marginTop: '1rem' }}
                                         name='priorityId'
+                                        value={userData.priorityId}
                                         onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
                                     >
                                         <option value={0}>Priority</option>
@@ -129,11 +133,20 @@ function TaskTable() {
                                         />
                                         Choose Image
                                     </label>
-                                    {imagePreviewUrl && (
-                                        <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem' }}>
-                                            <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
-                                        </Card>
-                                    )}
+                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        {imagePreviewUrl && (
+                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem',marginRight:'3rem' }}>
+                                                <p>Image</p>
+                                                <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
+                                            </Card>
+                                        )}
+                                        {userData?.image && (
+                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem' }}>
+                                                <p>Old Image</p>
+                                                <img src={userData.image} alt="" style={{ width: '10rem', height: '10rem' }} />
+                                            </Card>
+                                        )}
+                                    </div>
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button variant="secondary" onClick={handleClose}>
@@ -173,7 +186,7 @@ function TaskTable() {
                                     </td>
                                     <td className='th-action justify-content-end text-center'>
                                         <FontAwesomeIcon icon={faEye} className='icon-hover ml-2 me-2' />
-                                        <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2'/>
+                                        <FontAwesomeIcon icon={faPencilAlt} className='icon-hover me-2' onClick={() => { handleRowEdit(data, setModelShow, setUserData, setOldImagePreviewUrl, setModelHead, setRowId) }} />
                                         <FontAwesomeIcon icon={faTrash} className='icon-hover me-2' onClick={() => { handelDeleteTask(data.id, setTableData) }} />
                                     </td>
                                 </tr>
