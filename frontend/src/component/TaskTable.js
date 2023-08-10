@@ -6,14 +6,11 @@ function TaskTable() {
     const [tableData, setTableDate] = React.useState([]);
     React.useEffect(() => {
         ApiServices.getAllTasks().then((res) => {
-            setTableDate(res.data)
+            setTableDate(res.data.tasks)
             console.log(tableData);
-
-        }).catch((err)=>{
-            console.log(err);
-
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        console.log(tableData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setTableDate]);
     return (
         <div className="card">
