@@ -13,7 +13,8 @@ module.exports = {
               t.dateTime,
               t.image,
               t.createdAt,
-              p.name as priority
+              p.name as priority,
+              p.id as priorityId
             FROM taskTable AS t
             LEFT JOIN priority AS p ON t.priorityId = p.id;
           `);
@@ -59,6 +60,32 @@ module.exports = {
       }
     });
   },
+  updateTask: (id, data) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const keys = Object.keys(data);
+        const values = Object.values(data);
+        
+        if (keys.length === 0) {
+          reject(new Error('No data provided for update.'));
+          return;
+        }
+  
+        const updateQuery = `UPDATE taskTable SET ${keys.map(key => `${key} = ?`).join(', ')} WHERE id = ?`;
+        const queryParams = [...values, id];
+  
+        const result = await db.promise().query(updateQuery, queryParams);
+  
+        if (result[0]?.affectedRows > 0) {
+          resolve(true);
+        } else {
+          reject(false);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },  
   getAllPriority: () => {
     return new Promise(async (resolve, reject) => {
       try {

@@ -84,7 +84,21 @@ router.get('/priorities', async (req, res, next) => {
 
 router.post('/task', async (req, res, next) => {
   await task_helpers.createTask(req.body).then((response) => {
-    res.status(200).json({ insertedId:response.insertedId, message: 'task successfully created' });
+    res.status(200).json({ insertedId: response.insertedId, message: 'task successfully created' });
+  }).catch((err) => {
+    res.status(500).send('Error creating Tasks: ' + err);
+  })
+});
+
+router.put('/task/:id', async (req, res, next) => {
+  let id = req.params.id
+  await task_helpers.updateTask(id, req.body).then((response) => {
+    if (response === true) {
+      res.status(200).json({ data: response, message: 'task successfully updated' });
+    } else {
+      res.status(200).json({ data: response, message: 'task could not update' });
+
+    }
   }).catch((err) => {
     res.status(500).send('Error creating Tasks: ' + err);
   })
