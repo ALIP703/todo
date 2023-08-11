@@ -6,4 +6,8 @@ Production env, `.env.production` as well.\
 ```
 port="8000"
 server="http://localhost:8000"
+host = localhost
+dbUserName = root
+dbPassword = MySql@123
+db = task
 ```
