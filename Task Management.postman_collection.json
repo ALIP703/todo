@@ -140,6 +140,30 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Add Image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8000/tatask-image/30",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"tatask-image",
+						"30"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
