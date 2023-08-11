@@ -22,7 +22,16 @@ function TaskTable() {
     const { setOldImagePreviewUrl } = useOldImagePreviewUrl()
     const { rowId, setRowId } = useRowId()
 
-    const handleClose = () => setModelShow(false);
+    const handleModelClose = () => {
+        setModelShow(false)
+        setUserData({
+            heading: '',
+            description: '',
+            dateTime: '',
+            priorityId: '',
+        });
+    }
+        ;
     const handleShow = () => setModelShow(true);
     const [showModal, setShowModal] = React.useState(false);
 
@@ -71,7 +80,7 @@ function TaskTable() {
                         </DropdownButton>
                     </div>
 
-                    {/* model */}
+                    {/* addTasks model Button*/}
                     <div className="model model-section">
                         <Button variant="primary" size='sm'
                             onClick={() => {
@@ -83,90 +92,6 @@ function TaskTable() {
                         </Button>
 
 
-                        <Modal show={modelShow} onHide={handleClose}>
-                            <form onSubmit={(event) => {
-                                if (modelHead === 'Add Task') {
-                                    handleAddTasks(event, file, userData, setModelShow, setTableData, setOldImagePreviewUrl, setImagePreviewUrl, setUserData)
-                                } else if (modelHead === 'Update Task') {
-                                    handleUpdateTask(event, file, rowId, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData)
-                                }
-                            }}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>{modelHead}</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <FloatingLabel htmlFor="heading">Heading</FloatingLabel>
-                                    <Form.Control
-                                        type="text"
-                                        id="heading"
-                                        name='heading'
-                                        value={userData.heading}
-                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
-                                    />
-                                    <FloatingLabel htmlFor="description">Description</FloatingLabel>
-                                    <Form.Control
-                                        as="textarea"
-                                        id='description'
-                                        rows={3}
-                                        name='description'
-                                        value={userData.description}
-                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
-                                    />
-                                    <Form.Select aria-label="Default select example"
-                                        style={{ marginTop: '1rem' }}
-                                        name='priorityId'
-                                        value={userData.priorityId}
-                                        onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
-                                    >
-                                        <option value={0}>Priority</option>
-                                        {priorities.map((priority) => (
-                                            <option value={priority.id}>{priority.name}</option>
-                                        ))}
-                                    </Form.Select>
-                                    <FloatingLabel htmlFor="dateTime">DateTime</FloatingLabel>
-                                    <DatePicker
-                                        selected={userData.dateTime}
-                                        onChange={date => { handleUserDateChange(date, userData, setUserData) }}
-                                        showTimeSelect
-                                        timeIntervals={1}
-                                        timeCaption="Time"
-                                        minDate={new Date()}
-                                        dateFormat="Pp"
-                                        isClearable
-                                    />
-                                    <label  className="custom-file-upload">
-                                        <input
-                                            type="file"
-                                            id="image"
-                                            accept="image/png, image/jpeg"
-                                            onChange={(e) => { handleImageChange(e, setFile, setImagePreviewUrl) }}
-                                            className="filetype"
-                                        />
-                                        Choose Image
-                                    </label>
-                                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                        {imagePreviewUrl && (
-                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem', marginRight: '3rem' }}>
-                                                <p>Image</p>
-                                                <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
-                                            </Card>
-                                        )}
-                                        {userData?.image && (
-                                            <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem' }}>
-                                                <p>Old Image</p>
-                                                <img src={userData.image} alt="" style={{ width: '10rem', height: '10rem' }} />
-                                            </Card>
-                                        )}
-                                    </div>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                        Close
-                                    </Button>
-                                    <Button type='submit'>Submit</Button>
-                                </Modal.Footer>
-                            </form>
-                        </Modal>
                     </div>
                 </div>
                 <div className="table-responsive">
@@ -208,6 +133,95 @@ function TaskTable() {
                             <ViewTaskModel show={showModal} onHide={hideViewTaskModal} data={modelPropData} />
                         </tbody>
                     </table>
+                    {/* Model Content*/}
+                    <Modal show={modelShow} onHide={handleModelClose}>
+                        <form onSubmit={(event) => {
+                            if (modelHead === 'Add Task') {
+                                handleAddTasks(event, file, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData)
+                            } else if (modelHead === 'Update Task') {
+                                handleUpdateTask(event, file, rowId, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData)
+                            }
+                        }}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>{modelHead}</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FloatingLabel htmlFor="heading">Heading</FloatingLabel>
+                                <Form.Control
+                                    type="text"
+                                    id="heading"
+                                    required
+                                    name='heading'
+                                    value={userData.heading}
+                                    onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
+                                />
+                                <FloatingLabel htmlFor="description">Description</FloatingLabel>
+                                <Form.Control
+                                    as="textarea"
+                                    id='description'
+                                    required
+                                    rows={3}
+                                    name='description'
+                                    value={userData.description}
+                                    onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
+                                />
+                                <Form.Select aria-label="Default select example"
+                                    style={{ marginTop: '1rem' }}
+                                    required
+                                    name='priorityId'
+                                    value={userData.priorityId}
+                                    onChange={(event) => { handleUserDataChange(event, userData, setUserData) }}
+                                >
+                                    <option value={0}>Priority</option>
+                                    {priorities.map((priority) => (
+                                        <option value={priority.id}>{priority.name}</option>
+                                    ))}
+                                </Form.Select>
+                                <FloatingLabel htmlFor="dateTime">DateTime</FloatingLabel>
+                                <DatePicker
+                                    selected={userData.dateTime}
+                                    onChange={date => { handleUserDateChange(date, userData, setUserData) }}
+                                    showTimeSelect
+                                    required
+                                    timeIntervals={1}
+                                    timeCaption="Time"
+                                    minDate={new Date()}
+                                    dateFormat="Pp"
+                                    isClearable
+                                />
+                                <label className="custom-file-upload">
+                                    <input
+                                        type="file"
+                                        id="image"
+                                        accept="image/png, image/jpeg"
+                                        onChange={(e) => { handleImageChange(e, setFile, setImagePreviewUrl) }}
+                                        className="filetype"
+                                    />
+                                    Choose Image
+                                </label>
+                                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                    {imagePreviewUrl && (
+                                        <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem', marginRight: '3rem' }}>
+                                            <p>Image</p>
+                                            <img src={imagePreviewUrl} alt="" style={{ width: '10rem', height: '10rem' }} />
+                                        </Card>
+                                    )}
+                                    {userData?.image && (
+                                        <Card style={{ width: '10rem', height: '10rem', border: '0', marginTop: '1rem' }}>
+                                            <p>Old Image</p>
+                                            <img src={userData.image} alt="" style={{ width: '10rem', height: '10rem' }} />
+                                        </Card>
+                                    )}
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleModelClose}>
+                                    Close
+                                </Button>
+                                <Button type='submit'>Submit</Button>
+                            </Modal.Footer>
+                        </form>
+                    </Modal>
                 </div>
             </div>
         </div>

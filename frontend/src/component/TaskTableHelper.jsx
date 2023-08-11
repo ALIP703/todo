@@ -157,13 +157,13 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
                     setModelShow(false);
                 });
             }).catch(() => {
-                console.log('image upload error');
+                window.alert('image upload error')
             });
         }).catch(() => {
-            console.log('user data upload error');
+            window.alert('user data upload error')
         });
     } catch (error) {
-        console.error(error);
+        window.alert(error)
     }
 };
 
@@ -173,33 +173,35 @@ export const handleUpdateTask = async (event, image, id, userData, setModelShow,
         if (id == null) {
             return;
         }
-        await ApiServices.updateTask(id, userData).then(async (response) => {
-            if (image) {
-                const formData = new FormData();
-                let filename = 'doctor' + id + '.jpeg';
-                formData.append('image', image, filename);
-                await ApiServices.addTaskImage(formData).then((response) => {
-                    console.log('image upload success');
-                }).catch(() => {
-                    console.error('image upload error');
+        if (window.confirm('Are you sure you want to Update this task?')) {
+            await ApiServices.updateTask(id, userData).then(async (response) => {
+                if (image) {
+                    const formData = new FormData();
+                    let filename = 'doctor' + id + '.jpeg';
+                    formData.append('image', image, filename);
+                    await ApiServices.addTaskImage(formData).then((response) => {
+                        window.alert('image upload success')
+                    }).catch(() => {
+                        window.alert('image upload error')
+                    });
+                }
+                ApiServices.getAllTasks().then(async (res) => {
+                    setTableData(res.data.tasks);
+                    setImagePreviewUrl('');
+                    setUserData({
+                        heading: '',
+                        description: '',
+                        dateTime: '',
+                        priorityId: '',
+                    });
+                    setModelShow(false);
                 });
-            }
-            ApiServices.getAllTasks().then(async (res) => {
-                setTableData(res.data.tasks);
-                setImagePreviewUrl('');
-                setUserData({
-                    heading: '',
-                    description: '',
-                    dateTime: '',
-                    priorityId: '',
-                });
-                setModelShow(false);
+            }).catch(() => {
+                window.alert('user data upload error')
             });
-        }).catch(() => {
-            console.log('user data upload error');
-        });
+        }
     } catch (error) {
-        console.error(error);
+        window.alert(error)
     }
 };
 
