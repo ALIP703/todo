@@ -114,7 +114,16 @@ function TaskTable() {
                                     <td className='text-center'>{data.heading}</td>
                                     <td className='description  text-truncate d-none d-md-table-cell'>{data.description}</td>
                                     <td className="d-none d-sm-table-cell text-center">{data.priority}</td>
-                                    <td className="d-none d-md-table-cell text-center">{data.dateTime}</td>
+                                    <td className="d-none d-md-table-cell text-center">{new Date(data.dateTime).toLocaleString('en-US', {
+                                        timeZone: 'UTC',
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: 'numeric',
+                                        minute: 'numeric',
+                                        second: 'numeric',
+                                        hour12: false,
+                                    })}</td>
                                     <td className='th-image d-none d-lg-table-cell text-center'>
                                         <div className="d-flex justify-content-center align-items-center">
                                             <img crossOrigin="anonymous" src={data.image} alt='Task_image' className='table-image' />

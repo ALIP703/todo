@@ -139,15 +139,28 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
         window.alert('Image and content is required')
         return
     }
+    let data = { ...userData }
+    // // dateTime formatting
+    const date = new Date(data.dateTime);
+    // // Get the timezone offset in minutes
+    const timezoneOffset = date.getTimezoneOffset();
+    // // Convert the date to milliseconds since Unix epoch
+    const timestamp = date.getTime();
+    // // Calculate the UTC time in milliseconds
+    const utcTimestamp = timestamp - (timezoneOffset * 60 * 1000);
+    // // Create a new Date object from the UTC timestamp
+    const utcDate = new Date(utcTimestamp);
+    // // Convert the UTC date to an ISO string format
+    const isoString = utcDate.toISOString();
+    data.dateTime = isoString
     try {
         const uuidValue = uuid.v4();
         let filename = 'task_' + uuidValue + '.jpeg';
-        const data = JSON.stringify(userData)
+        data = JSON.stringify(data)
         const formData = new FormData();
         formData.append('image', file, filename);
         formData.append('data', data);
         await ApiServices.createTask(formData).then(async (response) => {
-            console.log(response);
             setModelShow(false);
             ApiServices.getAllTasks().then(async (res) => {
                 setTableData(res.data.tasks);
@@ -175,8 +188,25 @@ export const handleUpdateTask = async (event, image, id, userData, setModelShow,
     }
     try {
         if (window.confirm('Are you sure you want to Update this task?')) {
+            let data = { ...userData }
+            // // dateTime formatting
+            if (data?.dateTime) {
+                const date = new Date(data.dateTime);
+                // // Get the timezone offset in minutes
+                const timezoneOffset = date.getTimezoneOffset();
+                // // Convert the date to milliseconds since Unix epoch
+                const timestamp = date.getTime();
+                // // Calculate the UTC time in milliseconds
+                const utcTimestamp = timestamp - (timezoneOffset * 60 * 1000);
+                // // Create a new Date object from the UTC timestamp
+                const utcDate = new Date(utcTimestamp);
+                // // Convert the UTC date to an ISO string format
+                const isoString = utcDate.toISOString();
+                data.dateTime = isoString
+            }
             const formData = new FormData();
-            const data = JSON.stringify(userData);
+
+            data = JSON.stringify(data);
 
             if (image && userData.image) {
                 const parts = userData.image.split('/');
@@ -192,7 +222,7 @@ export const handleUpdateTask = async (event, image, id, userData, setModelShow,
                     if (response.data === false) {
                         window.alert('user data upload error');
                     } else {
-                        await ApiServices.getAllTasks().then((res)=>{
+                        await ApiServices.getAllTasks().then((res) => {
                             setTableData(res.data.tasks);
                             setImagePreviewUrl('');
                             setUserData({
