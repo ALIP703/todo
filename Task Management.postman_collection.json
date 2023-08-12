@@ -151,15 +151,14 @@
 					"formdata": []
 				},
 				"url": {
-					"raw": "http://localhost:8000/tatask-image/30",
+					"raw": "http://localhost:8000/tatask-image",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
-						"tatask-image",
-						"30"
+						"tatask-image"
 					]
 				}
 			},

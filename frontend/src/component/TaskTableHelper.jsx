@@ -156,8 +156,12 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
                     });
                     setModelShow(false);
                 });
-            }).catch(() => {
-                window.alert('image upload error')
+            }).catch(async() => {
+                await ApiServices.deleteTask(insertedId).then((res)=>{
+                    if (res.data.data === true) {
+                        window.alert('image upload error')
+                    }
+                })
             });
         }).catch(() => {
             window.alert('user data upload error')
@@ -180,7 +184,8 @@ export const handleUpdateTask = async (event, image, id, userData, setModelShow,
                     let filename = 'task_' + id + '.jpeg';
                     formData.append('image', image, filename);
                     await ApiServices.addTaskImage(formData).then((response) => {
-                        window.alert('image upload success')
+                        // window.alert('image upload success')
+                        console.log('image upload success');
                     }).catch(() => {
                         window.alert('image upload error')
                     });
