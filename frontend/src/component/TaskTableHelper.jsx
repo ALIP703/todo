@@ -1,6 +1,6 @@
 import React from 'react'
 import { ApiServices } from '../service/api';
-
+const uuid = require('uuid');
 export const useFile = () => { // custom offline hook
     const [file, setFile] = React.useState(null);
     return { file, setFile }
@@ -136,32 +136,26 @@ export const handleUserDateChange = (date, userData, setUserData) => {
 export const handleAddTasks = async (event, file, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData) => {
     event.preventDefault();
     if (!file || !userData) return;
-    let insertedId = '';
     try {
-        await ApiServices.createTask(userData).then(async (response) => {
-            insertedId = response.data.insertedId;
-            const formData = new FormData();
-            let filename = 'task_' + insertedId + '.jpeg';
-            formData.append('image', file, filename);
-            await ApiServices.addTaskImage(formData).then((response) => {
-                setModelShow(false);
-                ApiServices.getAllTasks().then(async (res) => {
-                    setTableData(res.data.tasks);
-                    setImagePreviewUrl('');
-                    setUserData({
-                        heading: '',
-                        description: '',
-                        dateTime: '',
-                        priorityId: '',
-                    });
-                    setModelShow(false);
+        const uuidValue = uuid.v4();
+        let filename = 'task_' + uuidValue + '.jpeg';
+        const data = JSON.stringify(userData)
+        const formData = new FormData();
+        formData.append('image', file, filename);
+        formData.append('data', data);
+        await ApiServices.createTask(formData).then(async (response) => {
+            console.log(response);
+            setModelShow(false);
+            ApiServices.getAllTasks().then(async (res) => {
+                setTableData(res.data.tasks);
+                setImagePreviewUrl('');
+                setUserData({
+                    heading: '',
+                    description: '',
+                    dateTime: '',
+                    priorityId: '',
                 });
-            }).catch(async() => {
-                await ApiServices.deleteTask(insertedId).then((res)=>{
-                    if (res.data.data === true) {
-                        window.alert('image upload error')
-                    }
-                })
+                setModelShow(false);
             });
         }).catch(() => {
             window.alert('user data upload error')
@@ -173,37 +167,44 @@ export const handleAddTasks = async (event, file, userData, setModelShow, setTab
 
 export const handleUpdateTask = async (event, image, id, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData) => {
     event.preventDefault();
+    if (id == null) {
+        return;
+    }
     try {
-        if (id == null) {
-            return;
-        }
         if (window.confirm('Are you sure you want to Update this task?')) {
-            await ApiServices.updateTask(id, userData).then(async (response) => {
-                if (image) {
-                    const formData = new FormData();
-                    let filename = 'task_' + id + '.jpeg';
-                    formData.append('image', image, filename);
-                    await ApiServices.addTaskImage(formData).then((response) => {
-                        // window.alert('image upload success')
-                        console.log('image upload success');
-                    }).catch(() => {
-                        window.alert('image upload error')
-                    });
-                }
-                ApiServices.getAllTasks().then(async (res) => {
-                    setTableData(res.data.tasks);
-                    setImagePreviewUrl('');
-                    setUserData({
-                        heading: '',
-                        description: '',
-                        dateTime: '',
-                        priorityId: '',
-                    });
-                    setModelShow(false);
-                });
-            }).catch(() => {
-                window.alert('user data upload error')
-            });
+            const formData = new FormData();
+            const data = JSON.stringify(userData);
+
+            if (image && userData.image) {
+                const parts = userData.image.split('/');
+                const filename = parts[parts.length - 1];
+
+                formData.append('image', image, filename);
+            }
+
+            formData.append('data', data);
+
+            try {
+                await ApiServices.updateTask(id, formData).then(async (response) => {
+                    if (response.data === false) {
+                        window.alert('user data upload error');
+                    } else {
+                        await ApiServices.getAllTasks().then((res)=>{
+                            setTableData(res.data.tasks);
+                            setImagePreviewUrl('');
+                            setUserData({
+                                heading: '',
+                                description: '',
+                                dateTime: '',
+                                priorityId: '',
+                            });
+                            setModelShow(false);
+                        })
+                    }
+                })
+            } catch (error) {
+                window.alert('user data upload error');
+            }
         }
     } catch (error) {
         window.alert(error)

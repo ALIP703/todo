@@ -46,6 +46,7 @@ router.get('/tasks', async (req, res, next) => {
   })
 });
 
+// delete tasks and its image
 router.delete('/task/:id', async (req, res, next) => {
   try {
     let id = req.params.id;
@@ -81,51 +82,44 @@ router.get('/priorities', async (req, res, next) => {
     res.status(500).send('Error fetching Tasks: ' + err);
   })
 });
+// create task with image
+router.post('/task', upload.single('image'), async (req, res, next) => {
+  // create image url for include user data
+  let userData = JSON.parse(req.body.data)
+  if (req.file?.filename) {
+    const host = process.env.SERVER;
+    const image_url = `${host}/assets/images/${req.file.filename}`;
+    userData.image = image_url
+  }
 
-router.post('/task', async (req, res, next) => {
-  await task_helpers.createTask(req.body).then((response) => {
-    res.status(200).json({ insertedId: response.insertedId, message: 'task successfully created' });
+  await task_helpers.createTask(userData).then(async (response) => {
+    if (response.insertedId > 0) {
+      res.status(200).json({ insertedId: response.insertedId, message: 'task successfully created with image' });
+    } else {
+      res.status(500).send('Error creating Tasks: ' + err);
+    }
   }).catch((err) => {
     res.status(500).send('Error creating Tasks: ' + err);
   })
 });
 
-router.put('/task/:id', async (req, res, next) => {
+// update task with image
+router.put('/task/:id', upload.single('image'), async (req, res, next) => {
   let id = req.params.id
-  await task_helpers.updateTask(id, req.body).then((response) => {
+  let userData = JSON.parse(req.body.data)
+  if (req.file?.filename) {
+    const host = process.env.SERVER;
+    const image_url = `${host}/assets/images/${req.file.filename}`;
+    userData.image = image_url
+  }    
+  await task_helpers.updateTask(id, userData).then((response) => {
     if (response === true) {
       res.status(200).json({ data: response, message: 'task successfully updated' });
     } else {
       res.status(200).json({ data: response, message: 'task could not update' });
     }
   }).catch((err) => {
-    res.status(500).send('Error creating Tasks: ' + err);
-  })
-});
-
-router.post('/task-image', upload.single('image'), async (req, res, next) => {
-  if (!req.file) {
-    res.status(400).send({ message: 'File is not fount' });
-  }
-  const image = req.file.filename;
-  console.log(image);
-  if (!image) {
-    res.status(400).send({ message: 'Filename is required' });
-  }
-  const host = process.env.SERVER;
-  const image_url = `${host}/assets/images/${req.file.filename}`;
-  const startIndex = image.indexOf('task_') + 'task_'.length;
-  const number = image.substring(startIndex, image.indexOf('.'));
-  const id = parseInt(number, 10);
-
-  await task_helpers.updateTaskImage(id, image_url).then((response) => {
-    if (response === true) {
-      res.status(200).json({ response, message: 'task image updated' });
-    } else {
-      res.status(200).json({ response, message: 'task image could not update' });
-
-    }
-  }).catch((err) => {
+    console.log(err);
     res.status(500).send('Error creating Tasks: ' + err);
   })
 });

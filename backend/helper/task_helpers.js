@@ -1,5 +1,8 @@
 var db = require('../config/connection/connection')
 var moment = require('moment')
+var path = require('path');
+var fs = require('fs');
+
 module.exports = {
   // fetching all table data from taskTable
   getAllTasks: () => {
@@ -68,17 +71,17 @@ module.exports = {
         }
         const keys = Object.keys(data);
         const values = Object.values(data);
-        
+
         if (keys.length === 0) {
           reject(new Error('No data provided for update.'));
           return;
         }
-  
+
         const updateQuery = `UPDATE taskTable SET ${keys.map(key => `${key} = ?`).join(', ')} WHERE id = ?`;
         const queryParams = [...values, id];
-  
+
         const result = await db.promise().query(updateQuery, queryParams);
-  
+
         if (result[0]?.affectedRows > 0) {
           resolve(true);
         } else {
@@ -89,7 +92,7 @@ module.exports = {
         reject(err);
       }
     });
-  },  
+  },
   getAllPriority: () => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -124,6 +127,29 @@ module.exports = {
   deleteTask: (id) => {
     return new Promise(async (resolve, reject) => {
       try {
+        // get image url for delete image from directory
+        const [rows] = await db.promise().query(`SELECT image FROM taskTable WHERE id = ?;`, [id]);
+        const image = rows[0].image;
+        if (image != undefined) {
+          const filename = path.basename(image);
+          const currentDir = __dirname;
+          const parentDir = path.dirname(currentDir);
+          const imagePath = path.join(parentDir, 'assets', 'images', filename);
+  
+          // Check if the file exists
+          if (fs.existsSync(imagePath)) {
+            // Delete the file
+            fs.unlink(imagePath, error => {
+              if (error) {
+                console.log(error);
+                throw new HttpException(500, `Failed to delete image ${filename}: ${error}`);
+              }
+            });
+          } else {
+                console.log(error);
+                throw new HttpException(404, `File not found`);
+          }
+        }
         const deleteResult = await db.promise().query(`
           DELETE FROM taskTable WHERE id = ?;
         `, [id]);

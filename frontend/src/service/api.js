@@ -18,17 +18,18 @@ export const ApiServices = {
     deleteTask: (id) => {
         return api.delete(`/task/${id}`);
     },
-    createTask: (userData) => {
-        return api.post(`/task`,userData);
-    },
-    addTaskImage: (formData) => {
-        return api.post(`/task-image`, formData, {
+    createTask: (formData) => {
+        return api.post(`/task`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
     },
-    updateTask: (id,userData) => {
-        return api.put(`/task/${id}`,userData);
+    updateTask: (id, formData) => {
+        return api.put(`/task/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
     },
 }
