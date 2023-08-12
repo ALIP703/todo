@@ -177,7 +177,7 @@ export const handleUpdateTask = async (event, image, id, userData, setModelShow,
             await ApiServices.updateTask(id, userData).then(async (response) => {
                 if (image) {
                     const formData = new FormData();
-                    let filename = 'doctor' + id + '.jpeg';
+                    let filename = 'task_' + id + '.jpeg';
                     formData.append('image', image, filename);
                     await ApiServices.addTaskImage(formData).then((response) => {
                         window.alert('image upload success')
