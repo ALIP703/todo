@@ -135,7 +135,10 @@ export const handleUserDateChange = (date, userData, setUserData) => {
 
 export const handleAddTasks = async (event, file, userData, setModelShow, setTableData, setImagePreviewUrl, setUserData) => {
     event.preventDefault();
-    if (!file || !userData) return;
+    if (!file || !userData) {
+        window.alert('Image and content is required')
+        return
+    }
     try {
         const uuidValue = uuid.v4();
         let filename = 'task_' + uuidValue + '.jpeg';

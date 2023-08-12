@@ -90,13 +90,22 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"heading\":\"postman test\",\r\n    \"description\":\"In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available\",\r\n    \"dateTime\":\"Thu Aug 10 2023 21:06:00 GMT+0530 (India Standard Time)\",\r\n    \"priorityId\":1\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"contentType": "multipart/form-data",
+							"description": "add filename too",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "data",
+							"value": "{\"heading\":\"postmantest\",\"description\":\"be used as a placeholder before final copy is available\",\"dateTime\":\"2023-08-10T17:01:00.000Z\",\"priorityId\":1}",
+							"contentType": "multipart/form-data",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": {
 					"raw": "http://localhost:8000/task",
@@ -136,29 +145,6 @@
 					"path": [
 						"task",
 						"30"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add Image",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"url": {
-					"raw": "http://localhost:8000/tatask-image",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"tatask-image"
 					]
 				}
 			},
