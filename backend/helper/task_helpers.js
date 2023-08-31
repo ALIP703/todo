@@ -18,7 +18,7 @@ module.exports = {
               t.createdAt,
               p.name as priority,
               p.id as priorityId
-            FROM taskTable AS t
+            FROM tasktable AS t
             LEFT JOIN priority AS p ON t.priorityId = p.id;
           `);
         resolve(results[0]); // 0 th data is table row data 
